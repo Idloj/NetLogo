@@ -19,6 +19,7 @@ import org.nlogo.nvm.MutableLong;
 import org.nlogo.nvm.Procedure;
 import org.nlogo.nvm.Workspace;
 import org.nlogo.util.Femto;
+import org.nlogo.util.JUtils;
 
 public abstract strictfp class AbstractWorkspace
     implements Workspace,
@@ -354,15 +355,9 @@ public abstract strictfp class AbstractWorkspace
     if (str == null) {
       return "Untitled";
     }
-    int suffixIndex = str.lastIndexOf(".nlogo");
-    if (suffixIndex > 0 && suffixIndex == str.length() - 6) {
-      str = str.substring(0, str.length() - 6);
-    }
-    suffixIndex = str.lastIndexOf(".nlogo3d");
-    if (suffixIndex > 0 && suffixIndex == str.length() - 8) {
-      str = str.substring(0, str.length() - 8);
-    }
-    return str;
+    scala.Option<String> withoutExtension =
+      JUtils.withoutExtension(str, ".nlogo", ".nlogo3d");
+    return withoutExtension.isDefined() ? withoutExtension.get() : str;
   }
 
   /// procedures
@@ -624,10 +619,8 @@ public abstract strictfp class AbstractWorkspace
       return defaultName;
     }
 
-    index = modelName.lastIndexOf(".nlogo");
-    if (index > -1) {
-      modelName = modelName.substring(0, index);
-    }
+    scala.Option<String> withoutExtension = JUtils.withoutExtension(modelName, ".nlogo");
+    if (withoutExtension.isDefined()) modelName = withoutExtension.get();
 
     return modelName + " " + defaultName;
   }

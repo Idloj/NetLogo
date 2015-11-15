@@ -2,6 +2,9 @@
 
 package org.nlogo.util;
 
+import scala.Option;
+import scala.collection.Seq;
+
 // we leave this in Java so we can use @SuppressWarnings
 
 public final strictfp class JUtils {
@@ -20,4 +23,7 @@ public final strictfp class JUtils {
     return file.toURL();
   }
 
+  public static Option<String> withoutExtension(String str, String... ext) {
+    return Utils.withoutExtension(str, ext);
+  }
 }

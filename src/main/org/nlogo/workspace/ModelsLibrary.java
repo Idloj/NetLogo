@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.nlogo.util.JUtils;
 import org.nlogo.util.Utils$;
 
 public strictfp class ModelsLibrary {
@@ -326,14 +327,9 @@ public strictfp class ModelsLibrary {
   }
 
   private static String removeSuffix(String reference) {
-    if (reference.endsWith(".nlogo")) {
-      return reference.substring(0, reference.lastIndexOf(".nlogo"));
-    }
-    if (reference.endsWith(".nlogo3d")) {
-      return reference.substring(0, reference.lastIndexOf(".nlogo3d"));
-    } else {
-      return reference;
-    }
+    scala.Option<String> withoutExtension =
+      JUtils.withoutExtension(reference, ".nlogo", ".nlogo3d");
+    return withoutExtension.isDefined() ? withoutExtension.get() : reference;
   }
 
   ///

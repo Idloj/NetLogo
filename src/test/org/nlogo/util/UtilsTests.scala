@@ -41,4 +41,12 @@ class UtilsTests2 extends PropSpec with PropertyChecks {
         assertResult(ns)(
           Utils.reader2String(new java.io.StringReader(ns), bufferSize)))}
 
+  property("withoutExtension + extension is the original String") {
+    forAll((str: String, ext: String) =>
+      assertResult(str)(
+        Utils.withoutExtension(str, ext) match {
+          case Some(x) => x + ext
+          case None => str
+        }))}
+
 }

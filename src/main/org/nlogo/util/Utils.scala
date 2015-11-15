@@ -84,12 +84,16 @@ object Utils {
     sb.toString
   }
 
-  def isSymlink(file: File): Boolean = {
-    val canon = if (file.getParent == null) {
-      file
-    } else {
-      new File(file.getParentFile.getCanonicalFile, file.getName)
-    }
-    file.getAbsolutePath != file.getCanonicalPath
-  }
+  def isSymlink(file: File): Boolean = file.getAbsolutePath != file.getCanonicalPath
+
+  def withoutExtension(str: String, ext: Array[String]): Option[String] =
+    withoutExtension(str, ext: _*)
+
+  def withoutExtension(str: String, ext: String *): Option[String] =
+    ext map { suffix =>
+      if (str.endsWith(suffix) && str != suffix)
+        Some(str.substring(0, str.length - suffix.length))
+      else
+        None
+    } reduce (_ orElse _)
 }
