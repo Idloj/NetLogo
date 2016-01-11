@@ -3,6 +3,7 @@
 package org.nlogo.app
 
 import scala.util.control.Exception.ignoring
+
 import org.nlogo.awt.UserCancelException
 import org.nlogo.workspace.AbstractWorkspace
 import org.nlogo.api.{I18N, FileIO, LocalFile}
@@ -29,8 +30,6 @@ with org.nlogo.window.Events.AboutToQuitEvent.Handler
       override def addControls() {
         add(new javax.swing.JButton(org.nlogo.app.FindDialog.FIND_ACTION))
         add(new javax.swing.JButton(compileAction))
-        add(new org.nlogo.swing.ToolBar.Separator)
-        add(new javax.swing.JButton(new FileCloseAction))
         add(new org.nlogo.swing.ToolBar.Separator)
         add(new ProceduresMenu(TemporaryCodeTab.this))
         add(includesMenu)
@@ -139,11 +138,4 @@ with org.nlogo.window.Events.AboutToQuitEvent.Handler
       case _ => throw new UserCancelException
     }
   }
-
-  private class FileCloseAction extends javax.swing.AbstractAction("Close") {
-    override def actionPerformed(e: java.awt.event.ActionEvent) {
-      close()
-    }
-  }
-
 }

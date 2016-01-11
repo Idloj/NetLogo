@@ -2,6 +2,11 @@
 
 package org.nlogo.app
 
+import java.awt.{ Dimension, FlowLayout, Graphics }
+import java.awt.event.{ ActionEvent, ActionListener, MouseAdapter, MouseEvent }
+import javax.swing.{ AbstractButton, BorderFactory, JButton, JLabel, JPanel }
+import javax.swing.plaf.basic.BasicButtonUI
+
 import org.nlogo.swing.Implicits._
 import org.nlogo.window.{EditDialogFactoryInterface, GUIWorkspace}
 import org.nlogo.window.Events._
@@ -133,6 +138,7 @@ class Tabs(val workspace: GUIWorkspace,
   def addNewTab(name: String, fileMustExist: Boolean) {
     val tab = new TemporaryCodeTab(workspace, this, name, fileMustExist)
     addTab(stripPath(name), tab)
+    setTabComponentAt(indexOfComponent(tab), new ClosableTabComponent(tab))
     addMenuItem(getTabCount() - 1, stripPath(name))
     org.nlogo.window.Event.rehash()
     tab.includesMenu.updateVisibility()
@@ -205,4 +211,35 @@ class Tabs(val workspace: GUIWorkspace,
   val linkComponents = new collection.mutable.ArrayBuffer[AnyRef]
   def addLinkComponent(c: AnyRef) { linkComponents += c }
   def getLinkChildren = linkComponents.toArray
+
+  class ClosableTabComponent(tab: TemporaryCodeTab) extends JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0)) {
+    setOpaque(false)
+    val title = new JLabel {
+      override def getText = {
+        val tabIndex = indexOfTabComponent(ClosableTabComponent.this)
+        if (tabIndex != -1) getTitleAt(tabIndex) else null
+      }
+    }
+    title.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5))
+    add(title)
+    val close = new JButton(" x ") {
+      setUI(new BasicButtonUI)
+      setBorder(BorderFactory.createEtchedBorder)
+      setBorderPainted(false)
+      setContentAreaFilled(false)
+      setFocusable(false)
+      override def paintComponent(g: Graphics) = {
+        if (getModel.isPressed) g.translate(1, 1)
+        super.paintComponent(g)
+      }
+      addMouseListener(new MouseAdapter {
+        override def mouseEntered(e: MouseEvent) = e.getComponent.asInstanceOf[AbstractButton].setBorderPainted(true)
+        override def mouseExited(e: MouseEvent) = e.getComponent.asInstanceOf[AbstractButton].setBorderPainted(false)
+      })
+      addActionListener(new ActionListener {
+        def actionPerformed(e: ActionEvent) = tab.close()
+      })
+    }
+    add(close)
+  }
 }
