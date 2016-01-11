@@ -65,6 +65,7 @@ menu.edit.selectAll = Select All
 menu.edit.find = Find...
 menu.edit.findNext = Find Next
 menu.edit.showLineNumbers = Show Line Numbers
+menu.edit.indentAutomatically = Indent Automatically
 menu.edit.shiftLeft = Shift Left
 menu.edit.shiftRight = Shift Right
 menu.edit.comment = Comment
@@ -153,7 +154,6 @@ tabs.code.rightclick.quickhelp = Quick Help
 tabs.code.checkButton = Check
 tabs.code.procedures = Procedures
 tabs.code.procedures.none = none
-tabs.code.indentAutomatically = Indent automatically
 
 # find actions and dialog
 dialog.find.title = Find

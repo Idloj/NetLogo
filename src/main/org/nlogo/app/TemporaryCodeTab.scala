@@ -13,17 +13,15 @@ object TemporaryCodeTab {
 class TemporaryCodeTab(workspace: AbstractWorkspace,
                              tabs: Tabs,
                              var filename: String,
-                             fileMustExist: Boolean,
-                             smartIndent: Boolean)
+                             fileMustExist: Boolean)
 extends CodeTab(workspace)
-with org.nlogo.app.Events.IndenterChangedEvent.Handler
 with org.nlogo.window.Events.LoadBeginEvent.Handler
 with org.nlogo.window.Events.AboutToQuitEvent.Handler
 {
 
   val includesMenu = new IncludesMenu(this)
   load(fileMustExist)
-  setIndenter(smartIndent)
+  setIndenter(tabs.codeTab.getIndenter)
   lineNumbersVisible = tabs.codeTab.lineNumbersVisible
 
   override def getToolBar =
@@ -77,10 +75,6 @@ with org.nlogo.window.Events.AboutToQuitEvent.Handler
 
   def handle(e: org.nlogo.window.Events.AboutToQuitEvent) {
     close()
-  }
-
-  def handle(e: org.nlogo.app.Events.IndenterChangedEvent) {
-    setIndenter(e.isSmart)
   }
 
   def close() {

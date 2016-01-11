@@ -29,6 +29,10 @@ with org.nlogo.window.Events.AboutToQuitEvent.Handler
     def actionPerformed(e: ActionEvent) =
       app.tabs.forAllCodeTabs (tab => tab.lineNumbersVisible = !tab.lineNumbersVisible)
   }
+  val autoIndentAction = new AbstractAction(I18N.gui("indentAutomatically")) {
+      def actionPerformed(e: ActionEvent) =
+        app.tabs.forAllCodeTabs (tab => tab.setIndenter(!tab.getIndenter))
+    }
 
   //TODO i18n - do we need to change the shortcut keys too?
   setMnemonic('E')
@@ -42,26 +46,30 @@ with org.nlogo.window.Events.AboutToQuitEvent.Handler
   addSeparator()
   addMenuItem(I18N.gui("selectAll"), 'A', Actions.SELECT_ALL_ACTION)
   addSeparator()
-  addMenuItem(I18N.gui("find"), 'F', org.nlogo.app.FindDialog.FIND_ACTION)
-  addMenuItem(I18N.gui("findNext"), 'G', org.nlogo.app.FindDialog.FIND_NEXT_ACTION)
+  addMenuItem(I18N.gui("find"), 'F', FindDialog.FIND_ACTION)
+  addMenuItem(I18N.gui("findNext"), 'G', FindDialog.FIND_NEXT_ACTION)
   addSeparator()
   private val lineNumbersItem = addCheckBoxMenuItem(I18N.gui("showLineNumbers"),
     prefs.get(lineNumbersKey, "false").toBoolean, lineNumbersAction)
   addSeparator()
-  addMenuItem(I18N.gui("shiftLeft"), '[', org.nlogo.editor.Actions.shiftLeftAction)
-  addMenuItem(I18N.gui("shiftRight"), ']', org.nlogo.editor.Actions.shiftRightAction)
+  addCheckBoxMenuItem(I18N.gui("indentAutomatically"), true, autoIndentAction)
+  addMenuItem(I18N.gui("shiftLeft"), '[', Actions.shiftLeftAction)
+  addMenuItem(I18N.gui("shiftRight"), ']', Actions.shiftRightAction)
   addSeparator()
-  addMenuItem(I18N.gui("comment"), ';', org.nlogo.editor.Actions.commentAction)
-  addMenuItem(I18N.gui("uncomment"), ';', true, org.nlogo.editor.Actions.uncommentAction)
+  addMenuItem(I18N.gui("comment"), ';', Actions.commentAction)
+  addMenuItem(I18N.gui("uncomment"), ';', true, Actions.uncommentAction)
   addSeparator()
   private val snapper = addCheckBoxMenuItem(I18N.gui("snapToGrid"), app.workspace.snapOn, snapAction)
 
   lineNumbersAction.setEnabled(false)
   if (lineNumbersItem.isSelected) lineNumbersAction.actionPerformed(null)
+  autoIndentAction.setEnabled(false)
+  autoIndentAction.actionPerformed(null)
 
   def handle(e: Events.SwitchedTabsEvent) {
     snapAction.setEnabled(e.newTab == app.tabs.interfaceTab)
     lineNumbersAction.setEnabled(e.newTab != app.tabs.interfaceTab && e.newTab != app.tabs.infoTab)
+    autoIndentAction.setEnabled(e.newTab != app.tabs.interfaceTab && e.newTab != app.tabs.infoTab)
   }
 
   def handle(e: org.nlogo.window.Events.LoadSectionEvent) {

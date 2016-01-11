@@ -122,6 +122,10 @@ public strictfp class EditorArea<TokenType>
     }
   }
 
+  public IndenterInterface getIndenter() {
+    return indenter;
+  }
+
   public void setIndenter(IndenterInterface indenter) {
     this.indenter = indenter;
   }

@@ -149,6 +149,7 @@ class CodeTab(val workspace: AbstractWorkspace) extends JPanel
   def print(g: Graphics, pageFormat: PageFormat,pageIndex: Int, printer: org.nlogo.swing.PrinterManager): Int =
     printer.printText(g, pageFormat, pageIndex, text.getText)
 
+  def getIndenter = text.getIndenter.isInstanceOf[SmartIndenter]
   def setIndenter(isSmart: Boolean) {
     if(isSmart) text.setIndenter(new SmartIndenter(new EditorAreaWrapper(text), workspace))
     else text.setIndenter(new org.nlogo.editor.DumbIndenter(text))

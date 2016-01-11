@@ -131,7 +131,7 @@ class Tabs(val workspace: GUIWorkspace,
   def newTemporaryFile() { addNewTab(TemporaryCodeTab.NewFile, false) }
 
   def addNewTab(name: String, fileMustExist: Boolean) {
-    val tab = new TemporaryCodeTab(workspace, this, name, fileMustExist, codeTab.smartTabbingEnabled)
+    val tab = new TemporaryCodeTab(workspace, this, name, fileMustExist)
     addTab(stripPath(name), tab)
     addMenuItem(getTabCount() - 1, stripPath(name))
     org.nlogo.window.Event.rehash()
