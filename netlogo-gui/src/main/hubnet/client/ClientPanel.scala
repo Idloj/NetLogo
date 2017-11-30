@@ -83,7 +83,7 @@ class ClientPanel(editorFactory:org.nlogo.window.EditorFactory,
   def handle(e: org.nlogo.window.Events.AddJobEvent) {
     org.nlogo.awt.EventQueue.mustBeEventDispatchThread()
     val button = e.owner.asInstanceOf[ButtonWidget]
-    sendDataAndWait(new ActivityCommand(button.displayName, button.foreverOn.asInstanceOf[AnyRef]))
+    sendDataAndWait(new ActivityCommand(button.displayName, (button.forever && button.running).asInstanceOf[AnyRef]))
     button.popUpStoppingButton()
   }
 

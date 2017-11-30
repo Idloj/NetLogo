@@ -44,7 +44,7 @@ abstract class JobWidget(val random: MersenneTwisterFast)
   def ownsPrimaryJobs: Boolean = true
 
   // override in subclasses
-  def isCommandCenter: Boolean = false;
+  def isCommandCenter: Boolean = false
 
   ///
 

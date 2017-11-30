@@ -41,12 +41,12 @@ object Logger extends APILogger {
   val customMsg = LogMessage.createCustomMessage()
   val customGlobals = LogMessage.createCustomGlobals()
 
-  def logButtonStopped(name: String, onceButton: Boolean, stopping: Boolean) {
+  def logButtonStopped(name: String, foreverButton: Boolean, stoppedByUser: Boolean) {
     if (Buttons.isInfoEnabled) {
-      val message = (onceButton, stopping) match {
-        case (true, _) => "once"
-        case (_, true) => "user"
-        case _ => "code"
+      val message = (foreverButton, stoppedByUser) match {
+        case (false, _) => "once"
+        case (true, true) => "user"
+        case (true, false) => "code"
       }
       buttonMsg.updateButtonMessage(name, "released", message)
       Buttons.info(buttonMsg)

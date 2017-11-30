@@ -98,7 +98,7 @@ class InterfacePanelLite(val viewWidget: ViewWidgetInterface, compiler: Compiler
 
   private def enableButtonKeys(enabled: Boolean): Unit = {
     getComponents.foreach {
-      case b: ButtonWidget => b.keyEnabled(enabled)
+      case b: ButtonWidget => b.keyEnabled = enabled
       case _ =>
     }
   }

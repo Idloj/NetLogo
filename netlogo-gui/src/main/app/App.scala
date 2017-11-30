@@ -1048,7 +1048,16 @@ class App extends
    * @see #command
    * @see #commandLater
    */
-  def pressButton(name:String) {
+  def pressButton(name: String): Unit = {
+    throw new UnsupportedOperationException
+    /*
+    def findButton(name:String): ButtonWidget =
+    tabs.interfaceTab.getInterfacePanel.getComponents
+      .collect{case bw: ButtonWidget => bw}
+      .find(_.displayName == name)
+      .getOrElse{throw new IllegalArgumentException(
+        "button '" + name + "' not found")}
+
     if (java.awt.EventQueue.isDispatchThread()) throw new IllegalStateException("can't call on event thread")
     val button = findButton(name)
     if (button.forever) {
@@ -1067,7 +1076,7 @@ class App extends
         try Thread sleep 100
         catch { case ex: InterruptedException => org.nlogo.api.Exceptions.ignore(ex) }
       }
-    }
+    }*/
   }
 
   /**
@@ -1081,13 +1090,6 @@ class App extends
   }
 
   /// helpers for controlling methods
-
-  private def findButton(name:String): ButtonWidget =
-    tabs.interfaceTab.getInterfacePanel.getComponents
-      .collect{case bw: ButtonWidget => bw}
-      .find(_.displayName == name)
-      .getOrElse{throw new IllegalArgumentException(
-        "button '" + name + "' not found")}
 
   def smartPack(targetSize:Dimension, allowShrink: Boolean) {
     val gc = frame.getGraphicsConfiguration

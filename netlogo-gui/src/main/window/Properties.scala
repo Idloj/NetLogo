@@ -31,8 +31,8 @@ object Properties {
   val button = javaList(
     P("agentOptions", P.AgentOptions, I18N.gui("button.agents"), gridWidth = RELATIVE),
     P("forever", P.Boolean, I18N.gui("button.forever")),
-    P("goTime", P.Boolean, I18N.gui("button.disable")),
-    P("wrapSource", P.Commands, I18N.gui("button.commands"), focus = true),
+    P("needsTicks", P.Boolean, I18N.gui("button.disable")),
+    P("innerSource", P.Commands, I18N.gui("button.commands"), focus = true),
     P("name", P.String, I18N.gui("button.displayName")),
     P("actionKey", P.Key, I18N.gui("button.actionKey"))
   )

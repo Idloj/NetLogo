@@ -73,7 +73,7 @@ private class RoboClientPanel(editorFactory:org.nlogo.window.EditorFactory,
           case s:SliderWidget =>
             if(s.value == s.maximum) s.value = s.minimum else s.value = s.value + s.increment
             (s.nameWrapper, Some(s.value))
-          case b: ButtonWidget => (widget.displayName, Some(if(b.foreverOn) true else false))
+          case b: ButtonWidget => (widget.displayName, Some(if(b.forever && b.running) true else false))
           case s: SwitchWidget =>
             s.isOn = !s.isOn
             (widget.displayName, Some(s.isOn))

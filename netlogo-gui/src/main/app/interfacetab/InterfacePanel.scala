@@ -284,7 +284,7 @@ class InterfacePanel(val viewWidget: ViewWidgetInterface, workspace: GUIWorkspac
     getComponents.collect {
       case w: WidgetWrapper => w.widget
     }.foreach {
-      case b: ButtonWidget => b.keyEnabled(enabled)
+      case b: ButtonWidget => b.keyEnabled = enabled
       case _ =>
     }
 
