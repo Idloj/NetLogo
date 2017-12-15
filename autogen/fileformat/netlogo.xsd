@@ -403,7 +403,7 @@
       </xsd:annotation>
       <xsd:choice minOccurs="0" maxOccurs="unbounded" >
         <xsd:annotation>
-          <xsd:appinfo passThrough="true" fieldName="value" className="AnyRef" />
+          <xsd:appinfo fieldName="value" className="AnyRef" />
         </xsd:annotation>
         <xsd:element name="number" type="xsd:double">
           <xsd:annotation>
@@ -675,47 +675,54 @@
       <xsd:appinfo className="LabProtocol" fileName="LabProtocolXml" />
     </xsd:annotation>
     <xsd:attribute name="name"                type="xsd:string" default="" />
-    <xsd:attribute name="repetitions"         type="xsd:nonNegativeInteger" default="1" />
     <xsd:attribute name="runMetricsEveryStep" type="xsd:boolean" default="true" />
-    <xsd:attribute name="sequentialRunOrder"  type="xsd:boolean" default="true" />
+    <xsd:attribute name="iterationLimit"      type="xsd:nonNegativeInteger" default="0">
+      <xsd:annotation>
+        <xsd:appinfo fieldName="timeLimit" />
+      </xsd:annotation>
+    </xsd:attribute>
     <xsd:all>
-      <xsd:element name="stepLimit" type="xsd:nonNegativeInteger" minOccurs="0" default="0">
-        <xsd:annotation>
-          <xsd:appinfo fieldName="timeLimit" />
-        </xsd:annotation>
-      </xsd:element>
-      <xsd:element name="setup" type="xsd:string" minOccurs="0" default="">
+      <xsd:element name="setupCode" type="xsd:string" minOccurs="0" default="">
         <xsd:annotation>
           <xsd:appinfo fieldName="setupCommands" />
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="go" type="xsd:string" minOccurs="0" default="">
+      <xsd:element name="goCode" type="xsd:string" minOccurs="0" default="">
         <xsd:annotation>
           <xsd:appinfo fieldName="goCommands" />
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="final" type="xsd:string" minOccurs="0" default="">
+      <xsd:element name="finalCode" type="xsd:string" minOccurs="0" default="">
         <xsd:annotation>
           <xsd:appinfo fieldName="finalCommands" />
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="exitCondition" type="xsd:string" minOccurs="0" default="" />
-      <xsd:element name="metrics" type="metrics" />
-      <xsd:element name="cartesianProduct" type="cartesianProduct">
+      <xsd:element name="stopConditionCode" type="xsd:string" minOccurs="0" default="">
         <xsd:annotation>
-          <xsd:appinfo fieldName="valueSets" />
+          <xsd:appinfo fieldName="exitCondition" />
         </xsd:annotation>
       </xsd:element>
+      <xsd:element name="metrics" type="metrics" />
+      <xsd:element name="parameterSet" type="parameterSet" />
     </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="parameterSet">
+    <xsd:choice>
+      <xsd:annotation>
+        <xsd:appinfo className="ParameterSet" ifNoMatch="CartesianProductParameterSet.empty" />
+      </xsd:annotation>
+      <xsd:element name="cartesianProduct" type="cartesianProduct" />
+    </xsd:choice>
   </xsd:complexType>
 
   <xsd:complexType name="cartesianProduct">
     <xsd:annotation>
-      <xsd:appinfo className="List[RefValueSet]" additionalImports="RefValueSet" import="false" />
+      <xsd:appinfo className="CartesianProductParameterSet" additionalImports="RefValueSet" />
     </xsd:annotation>
     <xsd:sequence>
       <xsd:annotation>
-        <xsd:appinfo className="List[RefValueSet]" />
+        <xsd:appinfo fieldName="valueSets" />
       </xsd:annotation>
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
@@ -725,6 +732,12 @@
         <xsd:element name="range" type="range" />
       </xsd:choice>
     </xsd:sequence>
+    <xsd:attribute name="repetitionsPerCombo" type="xsd:nonNegativeInteger" default="1">
+      <xsd:annotation>
+        <xsd:appinfo fieldName="repetitions" />
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="sequentialRunOrder"  type="xsd:boolean" default="true" />
   </xsd:complexType>
 
   <xsd:complexType name="metrics">
@@ -748,13 +761,17 @@
         <xsd:appinfo fieldName="variableName" />
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="first" type="nlx:bigDecimal" use="required">
+    <xsd:attribute name="min" type="nlx:bigDecimal" use="required">
       <xsd:annotation>
         <xsd:appinfo fieldName="firstValue" />
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="step" type="nlx:bigDecimal" use="required" />
-    <xsd:attribute name="last" type="nlx:bigDecimal" use="required">
+    <xsd:attribute name="interval" type="nlx:bigDecimal" use="required">
+      <xsd:annotation>
+        <xsd:appinfo fieldName="step" />
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="max" type="nlx:bigDecimal" use="required">
       <xsd:annotation>
         <xsd:appinfo fieldName="lastValue" />
       </xsd:annotation>
@@ -776,7 +793,7 @@
       </xsd:annotation>
       <xsd:choice minOccurs="0" maxOccurs="unbounded" >
         <xsd:annotation>
-          <xsd:appinfo className="AnyRef" fieldName="value" passThrough="true" />
+          <xsd:appinfo className="AnyRef" fieldName="value" />
         </xsd:annotation>
         <xsd:element name="number" type="xsd:double">
           <xsd:annotation>

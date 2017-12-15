@@ -304,11 +304,11 @@ lazy val parser = CrossProject("parser", file("."),
         Seq(
           "org.scala-lang.modules"   %%%! "scala-parser-combinators" % "1.0.5",
           "org.typelevel"  %%%! "cats-core" % "1.0.0-MF",
-          "org.nlogo" %%%! "xml-lib" % "0.0.1",
+          "org.nlogo" %%%! "xml-lib" % "0.0.2",
           "org.typelevel" %%%! "cats-core" % "1.0.0-MF",
           "org.scalatest"  %%%! "scalatest" % "3.0.0" % "test",
           "org.scalacheck" %%%! "scalacheck" % "1.13.4" % "test",
-          "org.nlogo" %%%! "xml-lib" % "0.0.1" % "test" classifier "tests"
+          "org.nlogo" %%%! "xml-lib" % "0.0.2" % "test" classifier "tests"
       )}).
   jvmConfigure(_.dependsOn(sharedResources)).
   jvmSettings(jvmSettings: _*).
@@ -319,8 +319,8 @@ lazy val parser = CrossProject("parser", file("."),
       libraryDependencies ++=
         Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.5",
           "org.typelevel" %% "cats-core" % "1.0.0-MF",
-          "org.nlogo" %% "xml-lib" % "0.0.1",
-          "org.nlogo" %% "xml-lib" % "0.0.1" % "test" classifier "tests")
+          "org.nlogo" %% "xml-lib" % "0.0.2",
+          "org.nlogo" %% "xml-lib" % "0.0.2" % "test" classifier "tests")
     )
 
 lazy val parserJVM = parser.jvm

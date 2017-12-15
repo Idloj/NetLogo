@@ -78,7 +78,7 @@ class LabLoader(literalParser: LiteralParser) {
       case _ => None } }
       yield valueSet
     }
-    new LabProtocol(
+    LabProtocol.fromValueSets(
       element.getAttribute("name"),
       readOptional("setup"),
       readOptional("go"),

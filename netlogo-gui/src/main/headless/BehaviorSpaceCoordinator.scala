@@ -2,18 +2,29 @@
 
 package org.nlogo.headless
 
-import java.nio.file.Paths
+import
+  java.nio.file.{ Files, Path, Paths }
 
-import org.nlogo.core.{ Femto, LiteralParser, Model }
-import org.nlogo.api.{ LabProtocol, Version, Workspace }
-import org.nlogo.nvm.LabInterface.Settings
-import org.nlogo.workspace.OpenModelFromURI
-import org.nlogo.fileformat
-import scala.util.{ Failure, Success }
+import
+  javax.xml.transform.{ OutputKeys, TransformerFactory, stream },
+    stream.{ StreamResult, StreamSource }
 
-import scala.io.Source
+import
+  org.nlogo.{ api, core, fileformat, nvm, workspace },
+    core.{ Femto, LiteralParser, Model },
+    api.{ FileIO, LabProtocol, Version, Workspace },
+    nvm.LabInterface.Settings,
+    workspace.OpenModelFromURI
+
+import
+  scala.util.{ Failure, Success }
+
+import
+  scala.io.Source
 
 object BehaviorSpaceCoordinator {
+  val ConversionStylesheetResource = "/system/behaviorspace-to-nlogox.xslt"
+
   private val literalParser =
     Femto.scalaSingleton[LiteralParser]("org.nlogo.parse.CompilerUtilities")
 
@@ -73,5 +84,16 @@ object BehaviorSpaceCoordinator {
   def externalProtocols(path: String): Option[Seq[LabProtocol]] = {
     val fileSource = Source.fromFile(path).mkString
     labFormat.load(fileSource.lines.toArray, None)
+  }
+
+  def convertToNewFormat(oldPath: Path, newPath: Path): Unit = {
+    Files.write(newPath, Files.readAllBytes(oldPath))
+    val stylesource = new StreamSource(FileIO.getResourceAsString(ConversionStylesheetResource))
+    stylesource.setSystemId(getClass.getResource(ConversionStylesheetResource).toString)
+    val inputSource = new StreamSource(oldPath.toFile)
+    val outputResult = new StreamResult(newPath.toFile)
+    val transformer = TransformerFactory.newInstance.newTransformer(stylesource)
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes")
+    transformer.transform(inputSource, outputResult)
   }
 }
