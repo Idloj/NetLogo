@@ -52,7 +52,7 @@ class NLogoXFormat(factory: ElementFactory) extends ModelFormat[NLogoXFormat.Sec
   def name: String = "nlogox"
   import NLogoXFormat.Section
 
-  val namespace = "http://ccl.northwestern.edu/netlogo/6.1"
+  val namespace = "http://ccl.northwestern.edu/netlogo/netlogox/6.1"
 
   private val NLogoXPrettyIndent = 2
 
