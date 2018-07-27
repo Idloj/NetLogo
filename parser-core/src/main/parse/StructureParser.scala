@@ -77,12 +77,12 @@ object StructureParser {
   }
 
   private def parseOne(tokenizer: core.TokenizerInterface, structureParser: StructureParser, source: String, filename: String, oldResults: StructureResults): StructureResults = {
-      val tokens =
-        tokenizer.tokenizeString(source, filename)
-          .filter(_.tpe != core.TokenType.Comment)
-          .map(Namer0)
-      structureParser.parse(tokens, oldResults)
-    }
+    val tokens =
+      tokenizer.tokenizeString(source, filename)
+        .filter(_.tpe != core.TokenType.Comment)
+        .map(Namer0)
+    structureParser.parse(tokens, oldResults)
+  }
 
   private[parse] def usedNames(program: Program, procedures: ProceduresMap): SymbolTable = {
     val symTable =

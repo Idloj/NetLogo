@@ -4,14 +4,13 @@ package org.nlogo.parse
 
 import org.nlogo.core,
   core.{ AgentVariableSet, Command, ExtensionManager, FrontEndInterface, Instruction,
-    Primitive, PrimitiveCommand, PrimitiveReporter, Program, Reporter,
+    PrimitiveCommand, PrimitiveReporter, Program, Reporter,
     Token, TokenMapperInterface, TokenType},
     FrontEndInterface.ProceduresMap
 
 trait NameHandler extends (Token => Option[(TokenType, core.Instruction)])
 
-class ProcedureVariableHandler(args: Seq[String])
-extends NameHandler {
+class ProcedureVariableHandler(args: Seq[String]) extends NameHandler {
   override def apply(token: Token) =
     Some(token.value.asInstanceOf[String])
       .filter(args.contains)
@@ -59,25 +58,13 @@ class ExtensionPrimitiveHandler(extensionManager: ExtensionManager) extends Name
       None
     else {
       val name = token.value.asInstanceOf[String]
-      val replacement = extensionManager.replaceIdentifier(name)
-      replacement match {
-        // if there's no replacement, make no change.
-        case null =>
-          None
-        case primitive =>
-          val newType =
-            if(primitive.isInstanceOf[PrimitiveCommand])
-              TokenType.Command
-            else TokenType.Reporter
-          Some((newType, wrap(primitive, name)))
+      val primitive = Option(extensionManager.replaceIdentifier(name))
+      primitive.map {
+        case c: PrimitiveCommand  =>
+          (TokenType.Command, new core.prim._extern(c.getSyntax))
+        case r: PrimitiveReporter =>
+          (TokenType.Reporter, new core.prim._externreport(r.getSyntax))
       }
-    }
-  private def wrap(primitive: Primitive, name: String): core.Instruction =
-    primitive match {
-      case c: PrimitiveCommand  =>
-        new core.prim._extern(c.getSyntax)
-      case r: PrimitiveReporter =>
-        new core.prim._externreport(r.getSyntax)
     }
 }
 
@@ -116,13 +103,12 @@ class AgentVariableReporterHandler(program: Program) extends NameHandler {
 
 // this should only be used for colorization, when we may or may not have
 // a complete program
-class BuiltInAgentVariableReporterHandler(agentVariables: AgentVariableSet)
-  extends NameHandler {
-    val variableMap = Map[Seq[String], Int => core.Reporter](
-      agentVariables.implicitObserverVariableTypeMap.keys.toSeq -> (i => new core.prim._observervariable(i)),
-      agentVariables.implicitTurtleVariableTypeMap.keys.toSeq   -> (i => new core.prim._turtlevariable(i)),
-      agentVariables.implicitPatchVariableTypeMap.keys.toSeq    -> (i => new core.prim._patchvariable(i)),
-      agentVariables.implicitLinkVariableTypeMap.keys.toSeq     -> (i => new core.prim._linkvariable(i)))
+class BuiltInAgentVariableReporterHandler(agentVariables: AgentVariableSet) extends NameHandler {
+  val variableMap = Map[Seq[String], Int => core.Reporter](
+    agentVariables.implicitObserverVariableTypeMap.keys.toSeq -> (i => new core.prim._observervariable(i)),
+    agentVariables.implicitTurtleVariableTypeMap.keys.toSeq   -> (i => new core.prim._turtlevariable(i)),
+    agentVariables.implicitPatchVariableTypeMap.keys.toSeq    -> (i => new core.prim._patchvariable(i)),
+    agentVariables.implicitLinkVariableTypeMap.keys.toSeq     -> (i => new core.prim._linkvariable(i)))
 
   override def apply(token: Token) =
     variableMap.find {

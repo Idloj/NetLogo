@@ -15,39 +15,41 @@ object StructureConverter {
               displayName: Option[String],
               oldResults: StructureResults,
               subprogram: Boolean): StructureResults = {
-    val is = declarations.collect {
+    val includes = declarations.collect {
       case i: Includes =>
         i.names
     }.flatten
-    val ps = declarations.collect {
+    val procedures = declarations.collect {
       case p: Procedure =>
         buildProcedure(p, displayName)
     }
-    ps.foreach(_._1.topLevel = subprogram)
+    procedures.foreach(_._1.topLevel = subprogram)
+    val extensions = declarations.collect {
+      case e: Extensions =>
+        e.names.map(_.token)
+    }.flatten
+
     StructureResults(
-      program =
-        updateProgram(oldResults.program, declarations),
-      procedures = oldResults.procedures ++
-        ps.map { case (pp, _) => pp.name -> pp},
-      procedureTokens = oldResults.procedureTokens ++ ps.map {
+      program = updateProgram(oldResults.program, declarations),
+      procedures = oldResults.procedures ++ procedures.map {
+        case (p, _) => p.name -> p
+      },
+      procedureTokens = oldResults.procedureTokens ++ procedures.map {
         case (p, toks) => p.name -> toks
       },
-      includes = oldResults.includes ++ is,
+      includes = oldResults.includes ++ includes,
       includedSources = oldResults.includedSources,
-      extensions = oldResults.extensions ++
-        declarations.collect {
-          case e: Extensions =>
-            e.names.map(_.token)
-        }.flatten)
+      extensions = oldResults.extensions ++ extensions)
   }
 
-  def buildProcedure(p: Procedure, displayName: Option[String]): (FrontEndProcedure, Iterable[Token]) = {
+  private def buildProcedure(p: Procedure, displayName: Option[String]): (FrontEndProcedure, Iterable[Token]) = {
     val proc = new RawProcedure(p, displayName)
-    (proc, p.tokens.drop(2).init :+
+    val bodyTokens = p.tokens.drop(2).init
+    (proc, bodyTokens :+
       new Token("", TokenType.Eof, "")(p.tokens.last.sourceLocation))
   }
 
-  def updateProgram(program: Program, declarations: Seq[Declaration]): Program = {
+  private def updateProgram(program: Program, declarations: Seq[Declaration]): Program = {
     def updateVariables(program: Program): Program =
       declarations.foldLeft(program) {
         case (program, Variables(Identifier("GLOBALS", _), identifiers)) =>
@@ -79,7 +81,7 @@ object StructureConverter {
     updateVariables(updateBreeds(program))
   }
 
-  def updateBreedVariables(program: Program, breedName: String, newOwns: Seq[String], tok: Token): Program = {
+  private def updateBreedVariables(program: Program, breedName: String, newOwns: Seq[String], tok: Token): Program = {
     if ((program.breeds.keySet ++ program.linkBreeds.keySet).contains(breedName)) {
       import collection.immutable.ListMap
       type BreedMap = ListMap[String, core.Breed]

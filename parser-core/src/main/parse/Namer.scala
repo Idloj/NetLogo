@@ -27,7 +27,7 @@ class Namer(
   // the handlers are mutually exclusive (only one applies), so the order the handlers
   // appear is arbitrary, except that for checkName to work, ProcedureVariableHandler
   // and CallHandler must come last - ST 5/14/13, 5/16/13
-  lazy val handlers = Seq[Token => Option[(TokenType, core.Instruction)]](
+  lazy val handlers = Seq[NameHandler](
     new CommandHandler(program.dialect.tokenMapper),
     new ReporterHandler(program.dialect.tokenMapper),
     new BreedHandler(program),
@@ -55,19 +55,15 @@ class Namer(
   private def checkName(token: Token) {
     val newVal = processOne(token).map(_.value).get
     val ok = newVal.isInstanceOf[core.prim._call] ||
-    newVal.isInstanceOf[core.prim._callreport] ||
-    newVal.isInstanceOf[core.prim._procedurevariable]
+             newVal.isInstanceOf[core.prim._callreport] ||
+             newVal.isInstanceOf[core.prim._procedurevariable]
     cAssert(ok, alreadyTaken(userFriendlyName(newVal), token.text.toUpperCase), token)
   }
 
   private def processOne(token: Token): Option[Token] = {
     handlers.flatMap(_(token))
       .headOption
-      .map{case (tpe, instr) =>
-        val newToken = token.copy(tpe = tpe, value = instr)
-        instr.token = newToken
-        newToken
-      }
+      .map { case (tpe, instr) => token.refine(instr, tpe = tpe) }
   }
 
   private def alreadyTaken(theirs: String, ours: String) =
