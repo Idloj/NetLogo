@@ -11,7 +11,7 @@ package org.nlogo.parse
 import
   org.nlogo.core,
     core.{ BreedIdentifierHandler, StructureDeclarations, Token },
-      StructureDeclarations.{ Breed, Declaration, Extensions, Identifier, Includes, Procedure, Variables },
+      StructureDeclarations._,
     core.Fail._
 
 import SymbolType._
@@ -27,6 +27,8 @@ object StructureChecker {
           Some((v1.kind.name, v2.kind.token))
         case (_: Extensions, e: Extensions) =>
           Some(("EXTENSIONS", e.token))
+        case (_: Modules, m: Modules) =>
+          Some(("MODULES", m.token))
         case (_: Includes, i: Includes) =>
           Some(("INCLUDES", i.token))
         case _ =>

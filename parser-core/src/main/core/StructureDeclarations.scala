@@ -10,6 +10,8 @@ object StructureDeclarations {
       extends Declaration
   case class Extensions(token: Token, names: Seq[Identifier])
       extends Declaration
+  case class Modules(token: Token, names: Seq[Identifier])
+      extends Declaration
   case class Breed(plural: Identifier, singular: Identifier, isLinkBreed: Boolean = false, isDirected: Boolean = false)
       extends Declaration
   case class Variables(kind: Identifier, names: Seq[Identifier])

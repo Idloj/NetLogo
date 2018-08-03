@@ -27,7 +27,7 @@ package org.nlogo.parse
 
 import
   org.nlogo.core.{ Token, TokenType, StructureDeclarations },
-  StructureDeclarations._
+    StructureDeclarations._
 
 object StructureCombinators {
   def parse(tokens: Iterator[Token]): Either[(String, Token), Seq[Declaration]] = {
@@ -70,7 +70,7 @@ extends scala.util.parsing.combinator.Parsers {
           decs ++ procs }
 
   def declaration: Parser[Declaration] =
-    includes | extensions | breed | directedLinkBreed | undirectedLinkBreed |
+    includes | extensions | modules | breed | directedLinkBreed | undirectedLinkBreed |
       variables("GLOBALS") | variables("TURTLES-OWN") | variables("PATCHES-OWN") |
       variables("LINKS-OWN") | breedVariables
 
@@ -83,6 +83,11 @@ extends scala.util.parsing.combinator.Parsers {
     keyword("EXTENSIONS") ~! identifierList ^^ {
       case token ~ names =>
         Extensions(token, names) }
+
+  def modules: Parser[Modules] =
+    keyword("MODULES") ~! identifierList ^^ {
+      case token ~ names =>
+        Modules(token, names) }
 
   def variables(key: String): Parser[Variables] =
     keyword(key) ~! identifierList ^^ {

@@ -28,6 +28,10 @@ object StructureConverter {
       case e: Extensions =>
         e.names.map(_.token)
     }.flatten
+    val modules = declarations.collect {
+      case m: Modules =>
+        m.names.map(_.token)
+    }.flatten
 
     StructureResults(
       program = updateProgram(oldResults.program, declarations),
@@ -39,7 +43,8 @@ object StructureConverter {
       },
       includes = oldResults.includes ++ includes,
       includedSources = oldResults.includedSources,
-      extensions = oldResults.extensions ++ extensions)
+      extensions = oldResults.extensions ++ extensions,
+      modules = oldResults.modules ++ modules)
   }
 
   private def buildProcedure(p: Procedure, displayName: Option[String]): (FrontEndProcedure, Iterable[Token]) = {

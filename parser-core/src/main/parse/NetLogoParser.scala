@@ -14,7 +14,9 @@ trait NetLogoParser {
 
   def basicParse(compilationOperand: CompilationOperand): (Seq[ProcedureDefinition], StructureResults) = {
     import compilationOperand.{ extensionManager, oldProcedures }
+
     val structureResults = StructureParser.parseSources(tokenizer, compilationOperand)
+
     val globallyUsedNames =
       StructureParser.usedNames(structureResults.program,
         oldProcedures ++ structureResults.procedures)
