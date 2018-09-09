@@ -46,7 +46,7 @@ class HeadlessModelOpener(ws: HeadlessWorkspace) {
       val additionalSources: Seq[SourceOwner] = if (ws.aggregateManager.isLoaded) Seq(ws.aggregateManager) else Seq()
       val code = model.code
       val newProg = Program.fromDialect(dialect).copy(interfaceGlobals = model.interfaceGlobals)
-      ws.compiler.compileProgram(code, additionalSources, newProg, ws.getExtensionManager, ws.getCompilationEnvironment)
+      ws.compiler.compileProgram(code, additionalSources, newProg, ws.getExtensionManager, ws.getModuleManager, ws.getCompilationEnvironment)
     }
     ws.procedures = results.proceduresMap
     ws.codeBits.clear() //(WTH IS THIS? - JC 10/27/09)

@@ -19,6 +19,7 @@ case class ProcedureSyntax(declarationKeyword: Token, identifier: Token, endKeyw
 case class CompilationOperand(
   sources: Map[String, String],
   extensionManager: ExtensionManager,
+  moduleManager: ModuleManager,
   compilationEnvironment: CompilationEnvironment,
   containingProgram: Program = Program.empty,
   oldProcedures: ProceduresMap = NoProcedures,
@@ -35,9 +36,10 @@ trait FrontEndInterface {
         subprogram: Boolean = true,
         oldProcedures: ProceduresMap = NoProcedures,
         extensionManager: ExtensionManager = new DummyExtensionManager,
+        moduleManager: ModuleManager = new DummyModuleManager,
         compilationEnvironment: CompilationEnvironment = new DummyCompilationEnvironment)
       : FrontEndInterface.FrontEndResults = {
-    frontEnd(CompilationOperand(Map("" -> source), extensionManager, compilationEnvironment, program, oldProcedures, subprogram, displayName))
+    frontEnd(CompilationOperand(Map("" -> source), extensionManager, moduleManager, compilationEnvironment, program, oldProcedures, subprogram, displayName))
   }
 
   def frontEnd(compilationOperand: CompilationOperand): FrontEndInterface.FrontEndResults

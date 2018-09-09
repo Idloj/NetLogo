@@ -4,7 +4,7 @@ package org.nlogo.compile
 
 import org.nlogo.{ api => nlogoApi, core, nvm },
   nlogoApi.{ ExtensionManager, SourceOwner },
-  core.{ CompilationEnvironment, CompilationOperand, CompilerUtilitiesInterface, Femto, FrontEndInterface, NetLogoCore, Program },
+  core.{ CompilationEnvironment, CompilationOperand, CompilerUtilitiesInterface, Femto, FrontEndInterface, ModuleManager, NetLogoCore, Program },
   nvm.{ CompilerFlags, CompilerResults, Optimizations => NvmOptimizations, Procedure },
     Procedure.{ ProceduresMap, NoProcedures }
 
@@ -32,21 +32,21 @@ object Compiler extends nvm.CompilerInterface {
     new Backifier(program, extensionManager)
 
   // used to compile the Code tab, including declarations
-  def compileProgram(source: String, program: Program, extensionManager: nlogoApi.ExtensionManager,
+  def compileProgram(source: String, program: Program, extensionManager: nlogoApi.ExtensionManager, moduleManager: ModuleManager,
     compilationEnvironment: CompilationEnvironment, flags: nvm.CompilerFlags): nvm.CompilerResults =
-    compile(source, None, program, false, NoProcedures, extensionManager, compilationEnvironment, flags)
+    compile(source, None, program, false, NoProcedures, extensionManager, moduleManager, compilationEnvironment, flags)
 
   // used to compile a single procedures only, from outside the Code tab
   def compileMoreCode(source: String, displayName: Option[String], program: Program,
-      oldProcedures: ProceduresMap, extensionManager: nlogoApi.ExtensionManager,
+      oldProcedures: ProceduresMap, extensionManager: nlogoApi.ExtensionManager, moduleManager: ModuleManager,
       compilationEnvironment: CompilationEnvironment, flags: nvm.CompilerFlags): nvm.CompilerResults =
-    compile(source, displayName, program, true, oldProcedures, extensionManager, compilationEnvironment, flags)
+    compile(source, displayName, program, true, oldProcedures, extensionManager, moduleManager, compilationEnvironment, flags)
 
   private def compile(source: String, displayName: Option[String], oldProgram: Program, subprogram: Boolean,
-      oldProcedures: ProceduresMap, extensionManager: nlogoApi.ExtensionManager,
+      oldProcedures: ProceduresMap, extensionManager: nlogoApi.ExtensionManager, moduleManager: ModuleManager,
       compilationEnvironment: CompilationEnvironment, flags: nvm.CompilerFlags): nvm.CompilerResults = {
     val (topLevelDefs, structureResults) =
-      frontEnd.frontEnd(source, displayName, oldProgram, subprogram, oldProcedures, extensionManager, compilationEnvironment)
+      frontEnd.frontEnd(source, displayName, oldProgram, subprogram, oldProcedures, extensionManager, moduleManager, compilationEnvironment)
     val bridged = bridge(structureResults, oldProcedures, topLevelDefs, backifier(structureResults.program, extensionManager))
     val allDefs = middleEnd.middleEnd(
       bridged,
@@ -60,11 +60,11 @@ object Compiler extends nvm.CompilerInterface {
   val defaultCompilerFlags =
     CompilerFlags(optimizations = NvmOptimizations.headlessOptimizations)
 
-  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: ExtensionManager, compilationEnv: CompilationEnvironment): CompilerResults = {
+  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: ExtensionManager, moduleManager: ModuleManager, compilationEnv: CompilationEnvironment): CompilerResults = {
     val allSources =
       Map("" -> source) ++ additionalSources.map(additionalSource => additionalSource.classDisplayName -> additionalSource.innerSource).toMap
     val (topLevelDefs, structureResults) =
-      frontEnd.frontEnd(CompilationOperand(allSources, extensionManager, compilationEnv, program, Procedure.NoProcedures, subprogram = false))
+      frontEnd.frontEnd(CompilationOperand(allSources, extensionManager, moduleManager, compilationEnv, program, Procedure.NoProcedures, subprogram = false))
     val bridged = bridge(structureResults, Procedure.NoProcedures, topLevelDefs, backifier(structureResults.program, extensionManager))
     val allDefs = middleEnd.middleEnd(
       bridged,

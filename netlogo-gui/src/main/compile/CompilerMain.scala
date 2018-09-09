@@ -10,9 +10,10 @@ package org.nlogo.compile
 import org.nlogo.api.{ ExtensionManager, Version }
 import org.nlogo.compile.api.{ Backifier => BackifierInterface, CommandMunger, DefaultAstVisitor,
   FrontMiddleBridgeInterface, MiddleEndInterface, Optimizations, ProcedureDefinition, ReporterMunger }
-import org.nlogo.core.{ Dialect, Program }
+import org.nlogo.core.{ CompilationEnvironment, CompilationOperand, Dialect, Femto,
+  FrontEndInterface, ModuleManager, Program }
 import org.nlogo.nvm.{ CompilerFlags, GeneratorInterface, Optimizations => NvmOptimizations, Procedure }
-import org.nlogo.core.{ CompilationEnvironment, CompilationOperand, FrontEndInterface, Femto }
+
 import scala.collection.immutable.ListMap
 
 private[compile] object CompilerMain {
@@ -35,11 +36,12 @@ private[compile] object CompilerMain {
     subprogram:       Boolean,
     oldProcedures:    ListMap[String, Procedure],
     extensionManager: ExtensionManager,
+    moduleManager:    ModuleManager,
     compilationEnv:   CompilationEnvironment): (ListMap[String, Procedure], Program) = {
 
     val oldProceduresListMap = ListMap[String, Procedure](oldProcedures.toSeq: _*)
     val (topLevelDefs, feStructureResults) =
-      frontEnd.frontEnd(CompilationOperand(sources, extensionManager, compilationEnv, program, oldProceduresListMap, subprogram, displayName))
+      frontEnd.frontEnd(CompilationOperand(sources, extensionManager, moduleManager, compilationEnv, program, oldProceduresListMap, subprogram, displayName))
 
     val bridged = bridge(feStructureResults, oldProcedures, topLevelDefs, backifier(feStructureResults.program, extensionManager))
 

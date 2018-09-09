@@ -77,8 +77,8 @@ class CompilerManager(val workspace: AbstractWorkspace,
         val results =
           workspace.compiler.compileMoreCode(owner.source,
             displayName, world.program,
-            workspace.procedures, workspace.getExtensionManager,
-            workspace.getCompilationEnvironment);
+            workspace.procedures, workspace.getExtensionManager, workspace.getModuleManager,
+            workspace.getCompilationEnvironment)
         results.head.init(workspace)
         results.head.owner = owner
         raiseEvent(new CompiledEvent(owner, world.program, results.head, null))
@@ -199,7 +199,8 @@ class CompilerManager(val workspace: AbstractWorkspace,
       val results =
         workspace.compiler.compileProgram(
           proceduresInterface.innerSource, owners, program,
-          workspace.getExtensionManager, workspace.getCompilationEnvironment)
+          workspace.getExtensionManager, workspace.getModuleManager,
+          workspace.getCompilationEnvironment)
       workspace.setProcedures(results.proceduresMap)
       workspace.procedures.values.foreach { procedure =>
         val owner = procedure.filename match {
@@ -248,7 +249,8 @@ class CompilerManager(val workspace: AbstractWorkspace,
       val results: CompilerResults =
         workspace.compiler.compileMoreCode(owner.source, displayName,
           world.program, workspace.procedures,
-          workspace.getExtensionManager, workspace.getCompilationEnvironment)
+          workspace.getExtensionManager, workspace.getModuleManager,
+          workspace.getCompilationEnvironment)
 
       if (!results.proceduresMap.isEmpty && results.proceduresMap != workspace.procedures) {
         results.head.init(workspace)

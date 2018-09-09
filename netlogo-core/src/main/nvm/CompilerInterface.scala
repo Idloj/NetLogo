@@ -4,8 +4,8 @@ package org.nlogo.nvm
 
 import org.nlogo.{ api, core },
   api.{ ExtensionManager => ApiExtensionManager, SourceOwner, Version, World },
-  core.{ CompilerException, CompilationEnvironment, CompilerUtilitiesInterface, Dialect, FrontEndInterface, ProcedureSyntax,
-    Program, Token }
+  core.{ CompilerException, CompilationEnvironment, CompilerUtilitiesInterface,
+    Dialect, FrontEndInterface, ModuleManager, ProcedureSyntax, Program, Token }
 
 import scala.collection.immutable.ListMap
 
@@ -15,13 +15,15 @@ trait CompilerInterface {
   import Procedure.ProceduresMap
   def frontEnd: FrontEndInterface
   def utilities: CompilerUtilitiesInterface
-  def compileProgram(source: String, program: Program, extensionManager: ApiExtensionManager,
+  def compileProgram(source: String, program: Program, extensionManager: ApiExtensionManager, moduleManager: ModuleManager,
     compilationEnvironment: CompilationEnvironment, flags: CompilerFlags = CompilerFlags()): CompilerResults
   def compileMoreCode(source: String, displayName: Option[String], program: Program,
-    oldProcedures: ProceduresMap, extensionManager: ApiExtensionManager, compilationEnvironment: CompilationEnvironment,
-    flags: CompilerFlags = CompilerFlags()): CompilerResults
+    oldProcedures: ProceduresMap, extensionManager: ApiExtensionManager, moduleManager: ModuleManager,
+    compilationEnvironment: CompilationEnvironment, flags: CompilerFlags = CompilerFlags()): CompilerResults
   @throws(classOf[CompilerException])
-  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: ApiExtensionManager, compilationEnv: CompilationEnvironment): CompilerResults
+  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program,
+    extensionManager: ApiExtensionManager, moduleManager: ModuleManager,
+    compilationEnv: CompilationEnvironment): CompilerResults
   def makeLiteralReporter(value: AnyRef): Reporter
 }
 
@@ -50,11 +52,11 @@ trait AuxiliaryCompilerInterface {
 
   @throws(classOf[CompilerException])
   def checkCommandSyntax(source: String, program: Program, procedures: ListMap[String, Procedure],
-                         extensionManager: ApiExtensionManager, parse: Boolean, compilationEnv: CompilationEnvironment)
+                         extensionManager: ApiExtensionManager, moduleManager: ModuleManager, parse: Boolean, compilationEnv: CompilationEnvironment)
 
   @throws(classOf[CompilerException])
   def checkReporterSyntax(source: String, program: Program, procedures: ListMap[String, Procedure],
-                          extensionManager: ApiExtensionManager, parse: Boolean, compilationEnv: CompilationEnvironment)
+                          extensionManager: ApiExtensionManager, moduleManager: ModuleManager, parse: Boolean, compilationEnv: CompilationEnvironment)
 }
 
 trait PresentationCompilerInterface extends CompilerInterface with AuxiliaryCompilerInterface

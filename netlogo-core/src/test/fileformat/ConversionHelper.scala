@@ -7,7 +7,7 @@ import java.nio.file.{ Files, Paths }
 import org.nlogo.api.NetLogoLegacyDialect
 
 import org.nlogo.core.{ Dialect, DummyCompilationEnvironment, DummyExtensionManager,
-  Femto, LiteralParser, Model, SourceRewriter }
+  DummyModuleManager, ErrorSource, Femto, LiteralParser, Model, SourceRewriter }
 
 trait ConversionHelper {
   val compilationEnvironment = FooCompilationEnvironment
@@ -20,10 +20,10 @@ trait ConversionHelper {
     Femto.scalaSingleton[LiteralParser]("org.nlogo.parse.CompilerUtilities")
 
   def converter(conversions: Model => Seq[ConversionSet] = (_ => Seq())) =
-    new ModelConverter(VidExtensionManager, FooCompilationEnvironment, literalParser, NetLogoLegacyDialect, defaultAutoConvertables, conversions)
+    new ModelConverter(VidExtensionManager, FooModuleManager, FooCompilationEnvironment, literalParser, NetLogoLegacyDialect, defaultAutoConvertables, conversions)
 
   def plotConverter =
-    new PlotConverter(VidExtensionManager, FooCompilationEnvironment, literalParser, NetLogoLegacyDialect, defaultAutoConvertables)
+    new PlotConverter(VidExtensionManager, FooModuleManager, FooCompilationEnvironment, literalParser, NetLogoLegacyDialect, defaultAutoConvertables)
 
   def tryConvert(model: Model, conversions: ConversionSet*): ConversionResult =
     converter(_ => conversions)(model, modelPath)
@@ -48,7 +48,7 @@ object VidExtensionManager extends DummyExtensionManager {
   import org.nlogo.core.{ Syntax, Primitive, PrimitiveCommand, PrimitiveReporter}
 
   override def anyExtensionsLoaded = true
-  override def importExtension(path: String, errors: org.nlogo.core.ErrorSource): Unit = { }
+  override def importExtension(path: String, errors: ErrorSource): Unit = { }
   override def replaceIdentifier(name: String): Primitive = {
     name match {
       case "VID:SAVE-RECORDING" =>
@@ -60,6 +60,10 @@ object VidExtensionManager extends DummyExtensionManager {
       case _ => null
     }
   }
+}
+
+object FooModuleManager extends DummyModuleManager {
+  override def importModule(name: String, errors: ErrorSource): Unit = {}
 }
 
 object FooCompilationEnvironment extends DummyCompilationEnvironment {

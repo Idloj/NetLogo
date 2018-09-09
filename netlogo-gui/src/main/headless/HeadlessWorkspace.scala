@@ -195,7 +195,7 @@ with org.nlogo.api.ViewSettings {
       else NetLogoLegacyDialect
     val newProgram = Program.fromDialect(dialect)
     val results = compiler.compileProgram(source, newProgram,
-      getExtensionManager, getCompilationEnvironment)
+      getExtensionManager, getModuleManager, getCompilationEnvironment)
     procedures = results.proceduresMap
     codeBits.clear()
     init()

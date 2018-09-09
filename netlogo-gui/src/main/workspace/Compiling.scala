@@ -24,12 +24,12 @@ trait Compiling { this: AbstractWorkspace =>
 
   @throws(classOf[CompilerException])
   def checkReporterSyntax(source: String): Unit = {
-    compiler.checkReporterSyntax(source, _world.program, procedures, getExtensionManager, false, getCompilationEnvironment)
+    compiler.checkReporterSyntax(source, _world.program, procedures, getExtensionManager, getModuleManager, false, getCompilationEnvironment)
   }
 
   @throws(classOf[CompilerException])
   def checkCommandSyntax(source: String): Unit = {
-    compiler.checkCommandSyntax(source, _world.program, procedures, getExtensionManager, false, getCompilationEnvironment)
+    compiler.checkCommandSyntax(source, _world.program, procedures, getExtensionManager, getModuleManager, false, getCompilationEnvironment)
   }
 
   def isReporter(s: String): Boolean =

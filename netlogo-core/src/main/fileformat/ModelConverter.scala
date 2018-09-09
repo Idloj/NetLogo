@@ -5,7 +5,7 @@ package org.nlogo.fileformat
 import java.nio.file.Path
 
 import org.nlogo.core.{ CompilationEnvironment, CompilationOperand, Dialect, ExtensionManager, Femto,
-  FrontEndInterface, LiteralParser, Model, Program, SourceRewriter, StructureResults },
+  FrontEndInterface, LiteralParser, Model, ModuleManager, Program, SourceRewriter, StructureResults },
   FrontEndInterface.ProceduresMap
 import org.nlogo.api.{ AutoConverter, AutoConvertable, FileIO, Version }
 
@@ -15,6 +15,7 @@ import scala.util.matching.Regex
 object ModelConverter {
   def apply(
     extensionManager:       ExtensionManager,
+    moduleManager:          ModuleManager,
     compilationEnvironment: CompilationEnvironment,
     literalParser:          LiteralParser,
     dialect:                Dialect,
@@ -25,12 +26,13 @@ object ModelConverter {
           conversionSet
       }
     }
-    new ModelConverter(extensionManager, compilationEnvironment, literalParser, dialect, conversionSections, modelConversions)
+    new ModelConverter(extensionManager, moduleManager, compilationEnvironment, literalParser, dialect, conversionSections, modelConversions)
   }
 }
 
 class ModelConverter(
   extensionManager:      ExtensionManager,
+  moduleManager:         ModuleManager,
   compilationEnv:        CompilationEnvironment,
   literalParser:         LiteralParser,
   baseDialect:           Dialect,
@@ -44,6 +46,7 @@ class ModelConverter(
       CompilationOperand(
         sources                = Map("" -> source) ++ components.flatMap(_.conversionSource(model, literalParser)).toMap,
         extensionManager       = extensionManager,
+        moduleManager          = moduleManager,
         compilationEnvironment =
           new CompilationEnvironment {
             def getSource(filename: String) = compilationEnv.getSource(filename)
@@ -130,7 +133,7 @@ class ModelConverter(
         newStructure(conversionRes.model.code) match {
           case Success(convertedStructure) =>
             val converter =
-              new SnippetConverter(otherCodeConversions, containsAnyTargets(targets), rewriterOp _, convertedStructure, extensionManager, compilationEnv)
+              new SnippetConverter(otherCodeConversions, containsAnyTargets(targets), rewriterOp _, convertedStructure, extensionManager, moduleManager, compilationEnv)
 
             components.foldLeft(conversionRes) {
               case (res, component) =>
@@ -161,6 +164,7 @@ class ModelConverter(
     rewriter: CompilationOperand => SourceRewriter,
     results: StructureResults,
     extensionManager: ExtensionManager,
+    moduleManager: ModuleManager,
     compilationEnv: CompilationEnvironment)
     extends AutoConverter {
 
@@ -189,6 +193,7 @@ class ModelConverter(
       CompilationOperand(
         sources                = Map("" -> source),
         extensionManager       = extensionManager,
+        moduleManager          = moduleManager,
         compilationEnvironment = compilationEnv,
         oldProcedures          = results.procedures,
         containingProgram      = results.program,

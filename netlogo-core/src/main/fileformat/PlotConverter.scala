@@ -5,7 +5,7 @@ package org.nlogo.fileformat
 import java.nio.file.Path
 
 import org.nlogo.core.{ CompilationEnvironment, Dialect, ExtensionManager,
-  LiteralParser, Model, Plot, Pen, SourceRewriter }
+  LiteralParser, Model, ModuleManager, Plot, Pen, SourceRewriter }
 import org.nlogo.api.AutoConvertable
 
 object PlotConverter {
@@ -85,12 +85,14 @@ object PlotConverter {
 
 class PlotConverter(
   extensionManager:      ExtensionManager,
+  moduleManager:         ModuleManager,
   compilationEnv:        CompilationEnvironment,
   literalParser:         LiteralParser,
   baseDialect:           Dialect,
   components:            Seq[AutoConvertable]) extends
   ModelConverter(
     extensionManager,
+    moduleManager,
     compilationEnv,
     literalParser,
     baseDialect,

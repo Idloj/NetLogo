@@ -2,27 +2,17 @@
 
 package org.nlogo.workspace;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import scala.collection.mutable.WeakHashMap;
 import org.nlogo.agent.Agent;
 import org.nlogo.api.*;
 import org.nlogo.core.CompilerException;
 import org.nlogo.core.Femto;
-import org.nlogo.core.FileModeJ;
-import org.nlogo.core.File;
-import org.nlogo.core.CompilerException;
-import org.nlogo.core.Token;
-import org.nlogo.core.TokenType;
 import org.nlogo.core.UpdateMode;
 import org.nlogo.core.UpdateModeJ;
 import org.nlogo.agent.ImporterJ;
-import org.nlogo.nvm.Activation;
 import org.nlogo.nvm.Command;
 import org.nlogo.nvm.EditorWorkspace;
-import org.nlogo.nvm.FileManager;
 import org.nlogo.nvm.Job;
 import org.nlogo.nvm.JobManagerInterface;
 import org.nlogo.nvm.LoggingWorkspace;
@@ -47,6 +37,7 @@ public abstract strictfp class AbstractWorkspace
   public final org.nlogo.nvm.JobManagerInterface jobManager;
   protected final Evaluator evaluator;
   protected final ExtensionManager extensionManager;
+  protected final ModuleManager moduleManager;
 
   public abstract WeakHashMap<Job, WeakHashMap<Agent, WeakHashMap<Command, MutableLong>>> lastRunTimes();
 
@@ -60,10 +51,15 @@ public abstract strictfp class AbstractWorkspace
     jobManager = Femto.getJ(JobManagerInterface.class, "org.nlogo.job.JobManager",
         new Object[]{this, world, world});
     extensionManager = new ExtensionManager(this, new JarLoader(this));
+    moduleManager = new ModuleManager(this);
   }
 
   public org.nlogo.workspace.ExtensionManager getExtensionManager() {
     return extensionManager;
+  }
+
+  public ModuleManager getModuleManager() {
+    return moduleManager;
   }
 
   public boolean isExtensionName(String name) {

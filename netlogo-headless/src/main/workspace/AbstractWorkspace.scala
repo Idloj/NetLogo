@@ -16,9 +16,9 @@ import
 import
   org.nlogo.{ agent, api, core, nvm, plot },
   agent.{ AbstractExporter, Agent, AgentSet, World },
-  api.{PlotInterface, CommandLogoThunk, Dump, Exceptions,
-    JobOwner, LogoException, MersenneTwisterFast, ModelType, PreviewCommands, ReporterLogoThunk, SimpleJobOwner},
-  core.{ CompilationEnvironment, AgentKind, CompilerException, Femto, File, FileMode, LiteralParser},
+  api.{ PlotInterface, CommandLogoThunk, Dump, Exceptions,
+    JobOwner, LogoException, MersenneTwisterFast, ModelType, PreviewCommands, ReporterLogoThunk, SimpleJobOwner },
+  core.{ CompilationEnvironment, AgentKind, CompilerException, Femto, File, FileMode, LiteralParser },
   nvm.{ Activation, Command, Context, FileManager, ImportHandler,
     Instruction, Job, MutableLong, Procedure, RuntimePrimitiveException, Workspace },
     Procedure.{ NoProcedures, ProceduresMap },
@@ -63,7 +63,7 @@ object AbstractWorkspace {
 abstract class AbstractWorkspace(val world: World)
 extends api.LogoThunkFactory with LiteralParser
 with Workspace with Procedures with Plotting with Exporting with Evaluating with Benchmarking
-with Compiling with Profiling with Extensions with BehaviorSpace with Paths with Checksums
+with Compiling with Profiling with Extensions with Modules with BehaviorSpace with Paths with Checksums
 with RunCache with Jobs with Warning with OutputArea with Importing
 with ExtendableWorkspace with ExtensionCompilationEnvironment with APIConformant {
   val fileManager: FileManager = new DefaultFileManager(this)
@@ -376,7 +376,7 @@ object AbstractWorkspaceTraits {
 
   trait Extensions { this: AbstractWorkspace =>
     private val _extensionManager: ExtensionManager =
-      new ExtensionManager(this, new JarLoader(this));
+      new ExtensionManager(this, new JarLoader(this))
     override def getExtensionManager =
       _extensionManager
     override def isExtensionName(name: String) =
@@ -385,6 +385,11 @@ object AbstractWorkspaceTraits {
     override def importExtensionData(name: String, data: java.util.List[Array[String]], handler: org.nlogo.api.ImportErrorHandler) {
       _extensionManager.importExtensionData(name, data, handler)
     }
+  }
+
+  trait Modules { this: AbstractWorkspace =>
+    private val _moduleManager: ModuleManager = new ModuleManager(this)
+    override def getModuleManager = _moduleManager
   }
 
   trait Checksums { this: AbstractWorkspace =>

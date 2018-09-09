@@ -58,7 +58,7 @@ object ModelResaver {
     val ws = HeadlessWorkspace.newInstance
     try {
       val converter =
-        fileformat.converter(ws.getExtensionManager, ws.getCompilationEnvironment,
+        fileformat.converter(ws.getExtensionManager, ws.getModuleManager, ws.getCompilationEnvironment,
           literalParser, fileformat.defaultAutoConvertables :+ SDMAutoConvertable) _
       val modelLoader =
         fileformat.standardLoader(ws.compiler.utilities)

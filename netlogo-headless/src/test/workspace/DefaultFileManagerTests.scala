@@ -10,7 +10,7 @@ org.nlogo.{core, agent, api, nvm},
     agent.OutputObject,
     api.{ ExtensionManager => APIExtensionManager, SourceOwner },
     core.{ CompilerException, CompilerUtilitiesInterface, CompilationEnvironment,
-           File, FileMode, FrontEndInterface, LiteralImportHandler, Program},
+           File, FileMode, FrontEndInterface, LiteralImportHandler, ModuleManager => CoreModuleManager, Program},
     nvm.{Procedure, CompilerFlags, CompilerInterface, CompilerResults, Reporter},
       FrontEndInterface.ProceduresMap
 
@@ -296,11 +296,12 @@ class DefaultFileManagerTests extends FunSuite with OneInstancePerTest {
     override def compileProgram(source: String,
                                 program: Program,
                                 extensionManager: APIExtensionManager,
+                                moduleManager: CoreModuleManager,
                                 compilationEnvironment: CompilationEnvironment,
                                 flags: CompilerFlags): CompilerResults = ???
 
     @throws(classOf[CompilerException])
-    override def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: APIExtensionManager, compilationEnv: CompilationEnvironment): CompilerResults = ???
+    override def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: APIExtensionManager, moduleManager: CoreModuleManager, compilationEnv: CompilationEnvironment): CompilerResults = ???
 
     override def makeLiteralReporter(value: AnyRef): Reporter = ???
 
@@ -309,6 +310,7 @@ class DefaultFileManagerTests extends FunSuite with OneInstancePerTest {
                                  program: Program,
                                  oldProcedures: Procedure.ProceduresMap,
                                  extensionManager: APIExtensionManager,
+                                 moduleManager: CoreModuleManager,
                                  compilationEnvironment: CompilationEnvironment,
                                  flags: CompilerFlags): CompilerResults = ???
 

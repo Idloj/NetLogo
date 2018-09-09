@@ -2,7 +2,7 @@
 
 package org.nlogo.compile
 
-import org.nlogo.core.{ DummyCompilationEnvironment, Program }
+import org.nlogo.core.{ DummyCompilationEnvironment, DummyModuleManager, Program }
 import org.scalatest.FunSuite
 import org.nlogo.api.{ AgentVariableNumbers, DummyExtensionManager, Version, NetLogoThreeDDialect, NetLogoLegacyDialect }
 import org.nlogo.nvm.{ Command, Procedure }
@@ -19,7 +19,7 @@ class TestGenerator extends FunSuite {
     compiler.compileMoreCode(
       "to foo " + preamble + source + "\nend", None,
       program, new scala.collection.immutable.ListMap[String, Procedure](),
-      new DummyExtensionManager, new DummyCompilationEnvironment()).head
+      new DummyExtensionManager, new DummyModuleManager, new DummyCompilationEnvironment()).head
   def compile(source: String, preamble: String): Command =
     compileAll(source, preamble).code.head
   def disassembleProcedure(source: String): String =
@@ -154,7 +154,7 @@ class TestGenerator extends FunSuite {
           |to-report move
           |  report all? agents-here [true] or all? agents-here [false]
           |end
-          """.stripMargin, emptyProgram, new DummyExtensionManager, new DummyCompilationEnvironment()
+          """.stripMargin, emptyProgram, new DummyExtensionManager, new DummyModuleManager, new DummyCompilationEnvironment()
         )
       }
 }

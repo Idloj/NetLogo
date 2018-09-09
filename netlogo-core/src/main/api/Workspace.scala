@@ -2,7 +2,7 @@
 
 package org.nlogo.api
 
-import org.nlogo.core.{ CompilationEnvironment, CompilerException, Model, LiteralParser, LogoList }
+import org.nlogo.core.{ CompilationEnvironment, CompilerException, Model, ModuleManager, LiteralParser, LogoList }
 
 import java.io.IOException
 
@@ -10,6 +10,7 @@ trait Workspace extends ImporterUser with LiteralParser with RandomServices
 with ViewSettings with Controllable {
   def world: World
   def getExtensionManager: ExtensionManager
+  def getModuleManager: ModuleManager
   def getCompilationEnvironment: CompilationEnvironment
   def waitFor(runnable: CommandRunnable)
   def waitForResult[T](runnable: ReporterRunnable[T]): T

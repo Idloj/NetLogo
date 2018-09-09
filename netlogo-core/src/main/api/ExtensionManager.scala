@@ -2,8 +2,6 @@
 
 package org.nlogo.api
 
-import org.nlogo.core.ExtensionObject
-
 import org.nlogo.core.{ ExtensionObject, ExtensionManager => CoreManager }
 
 /**

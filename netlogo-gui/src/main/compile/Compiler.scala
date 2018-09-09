@@ -2,10 +2,9 @@
 
 package org.nlogo.compile
 
-import org.nlogo.core.{ CompilationEnvironment, CompilerException, CompilerUtilitiesInterface, Dialect, Femto, FrontEndInterface, ProcedureSyntax, Program, Token }
-import org.nlogo.api.{ SourceOwner, World }
+import org.nlogo.api.{ ExtensionManager, SourceOwner, World }
+import org.nlogo.core.{ CompilationEnvironment, CompilerException, CompilerUtilitiesInterface, Dialect, Femto, FrontEndInterface, ModuleManager, ProcedureSyntax, Program, Token }
 import org.nlogo.nvm.{ PresentationCompilerInterface, CompilerFlags, CompilerResults, ImportHandler, Procedure }
-import org.nlogo.api.ExtensionManager
 
 import scala.collection.immutable.ListMap
 
@@ -31,9 +30,9 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
 
   // used to compile the Code tab, including declarations
   @throws(classOf[CompilerException])
-  def compileProgram(source: String, program: Program, extensionManager: ExtensionManager, compilationEnv: CompilationEnvironment): CompilerResults = {
+  def compileProgram(source: String, program: Program, extensionManager: ExtensionManager, moduleManager: ModuleManager, compilationEnv: CompilationEnvironment): CompilerResults = {
     val (procedures, newProgram) =
-      CompilerMain.compile(Map("" -> source), None, program, false, noProcedures, extensionManager, compilationEnv)
+      CompilerMain.compile(Map("" -> source), None, program, false, noProcedures, extensionManager, moduleManager, compilationEnv)
 
     new CompilerResults(procedures, newProgram)
   }
@@ -41,13 +40,13 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
   // used to compile the Code tab with additional sources
   // (like system dynamics modeler)
   @throws(classOf[CompilerException])
-  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: ExtensionManager, compilationEnv: CompilationEnvironment): CompilerResults = {
+  def compileProgram(source: String, additionalSources: Seq[SourceOwner], program: Program, extensionManager: ExtensionManager, moduleManager: ModuleManager, compilationEnv: CompilationEnvironment): CompilerResults = {
     val sources =
       Map("" -> source) ++ additionalSources.map(additionalSource =>
           additionalSource.classDisplayName -> additionalSource.innerSource).toMap
 
     val (procedures, newProgram) =
-      CompilerMain.compile(sources, None, program, false, noProcedures, extensionManager, compilationEnv)
+      CompilerMain.compile(sources, None, program, false, noProcedures, extensionManager, moduleManager, compilationEnv)
 
     new CompilerResults(procedures, newProgram)
   }
@@ -57,9 +56,10 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
     source:                 String,
     program:                Program,
     extensionManager:       ExtensionManager,
+    moduleManager:          ModuleManager,
     compilationEnvironment: CompilationEnvironment,
     flags:                  CompilerFlags): CompilerResults = {
-      compileProgram(source, Seq(), program, extensionManager, compilationEnvironment)
+      compileProgram(source, Seq(), program, extensionManager, moduleManager, compilationEnvironment)
   }
 
   def makeLiteralReporter(value: AnyRef): org.nlogo.nvm.Reporter =
@@ -73,9 +73,10 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
     program:          Program,
     oldProcedures:    ProceduresMap,
     extensionManager: ExtensionManager,
+    moduleManager:    ModuleManager,
     compilationEnv:   CompilationEnvironment): CompilerResults = {
     val (procedures, newProgram) =
-      CompilerMain.compile(Map("" -> source),displayName,program,true,oldProcedures,extensionManager,compilationEnv)
+      CompilerMain.compile(Map("" -> source), displayName, program, true, oldProcedures, extensionManager, moduleManager, compilationEnv)
     new CompilerResults(procedures, newProgram)
   }
 
@@ -86,21 +87,22 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
     program:                Program,
     oldProcedures:          Procedure.ProceduresMap,
     extensionManager:       ExtensionManager,
+    moduleManager:          ModuleManager,
     compilationEnvironment: CompilationEnvironment,
     flags:                  CompilerFlags): CompilerResults = {
-      compileMoreCode(source, displayName, program, oldProcedures, extensionManager, compilationEnvironment)
+      compileMoreCode(source, displayName, program, oldProcedures, extensionManager, moduleManager, compilationEnvironment)
   }
 
   // these two used by input boxes
   @throws(classOf[CompilerException])
-  def checkCommandSyntax(source: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
+  def checkCommandSyntax(source: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, moduleManager: ModuleManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
     checkSyntax("to __bogus-name " + source + "\nend",
-                true, program, procedures, extensionManager, parse, compilationEnv)
+                true, program, procedures, extensionManager, moduleManager, parse, compilationEnv)
   }
   @throws(classOf[CompilerException])
-  def checkReporterSyntax(source: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
+  def checkReporterSyntax(source: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, moduleManager: ModuleManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
     checkSyntax("to-report __bogus-name report " + source + "\nend",
-                true, program, procedures, extensionManager, parse, compilationEnv)
+                true, program, procedures, extensionManager, moduleManager, parse, compilationEnv)
   }
 
   // this function tries to go as far as possible, but throws an exception if there is
@@ -109,11 +111,11 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
   // Additionally, the compiler doesn't currently work for 3D prims, so that will also need to be fixed.
   // this also always parses, which probably isn't desirable, but we don't have an option at this point
   @throws(classOf[CompilerException])
-  private def checkSyntax(source: String, subprogram: Boolean, program: Program, oldProcedures: ProceduresMap, extensionManager: ExtensionManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
+  private def checkSyntax(source: String, subprogram: Boolean, program: Program, oldProcedures: ProceduresMap, extensionManager: ExtensionManager, moduleManager: ModuleManager, parse: Boolean, compilationEnv: CompilationEnvironment) {
 
     val oldProceduresListMap = ListMap[String, Procedure](oldProcedures.toSeq: _*)
     val (topLevelDefs, feStructureResults) =
-      frontEnd.frontEnd(source, None, program, subprogram, oldProceduresListMap, extensionManager)
+      frontEnd.frontEnd(source, None, program, subprogram, oldProceduresListMap, extensionManager, moduleManager)
   }
 
   /// TODO: remove all direct dependencies on world by having below methods take an ImportHandler

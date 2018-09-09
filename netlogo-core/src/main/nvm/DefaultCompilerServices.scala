@@ -21,11 +21,11 @@ class DefaultCompilerServices(compiler: CompilerInterface with AuxiliaryCompiler
   def checkReporterSyntax(source: String) =
     compiler.checkReporterSyntax(source, emptyProgram,
                                  new ListMap[String,Procedure],
-                                 null, false, new DummyCompilationEnvironment())
+                                 null, null, false, new DummyCompilationEnvironment())
   def checkCommandSyntax(source: String) =
     compiler.checkCommandSyntax(source, emptyProgram,
                                 new ListMap[String,Procedure],
-                                null, true, new DummyCompilationEnvironment())
+                                null, null, true, new DummyCompilationEnvironment())
   def readFromString(source: String) =
     compiler.readFromString(source)
   def isConstant(s: String) =

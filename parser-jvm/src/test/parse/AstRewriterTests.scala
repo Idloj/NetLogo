@@ -5,7 +5,7 @@ package org.nlogo.parse
 import org.scalatest.FunSuite
 
 import org.nlogo.core.{ CompilationOperand, CompilerException, DummyCompilationEnvironment,
-  DummyExtensionManager, Femto, NetLogoCore, Program, TokenizerInterface }
+  DummyExtensionManager, DummyModuleManager, Femto, NetLogoCore, Program, TokenizerInterface }
 
 class AstRewriterTests extends FunSuite {
   // these are basic checks that various AST structures can be rewritten when unaltered
@@ -175,6 +175,9 @@ class AstRewriterTests extends FunSuite {
     new CompilationOperand(Map("" -> source),
       new DummyExtensionManager() {
         override def importExtension(path: String, errors: org.nlogo.core.ErrorSource): Unit = { }
+      },
+      new DummyModuleManager() {
+        override def importModule(name: String, errors: org.nlogo.core.ErrorSource): Unit = { }
       },
       new DummyCompilationEnvironment(),
       Program.fromDialect(NetLogoCore),

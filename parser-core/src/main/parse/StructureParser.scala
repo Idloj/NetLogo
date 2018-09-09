@@ -32,6 +32,7 @@ object StructureParser {
   def parseSources(tokenizer: core.TokenizerInterface, compilationData: CompilationOperand,
     includeFile: (CompilationEnvironment, String) => Option[(String, String)] = IncludeFile.apply _): StructureResults = {
       import compilationData.{ compilationEnvironment, displayName, oldProcedures, subprogram, sources, containingProgram => program }
+      parsingWithModules(compilationData) {
       parsingWithExtensions(compilationData) {
         val structureParser = new StructureParser(displayName, subprogram)
         val firstResults =
@@ -55,7 +56,7 @@ object StructureParser {
             }
           }.dropWhile(_.includes.nonEmpty).next
         }
-      }
+      }}
   }
 
   private def parsingWithExtensions(compilationData: CompilationOperand)(results: => StructureResults): StructureResults = {
@@ -71,6 +72,22 @@ object StructureParser {
           token.text.toLowerCase, new ErrorSource(token))
 
       compilationData.extensionManager.finishFullCompilation()
+
+      r
+    }
+  }
+
+  private def parsingWithModules(compilationData: CompilationOperand)(results: StructureResults): StructureResults = {
+    if (compilationData.subprogram)
+      results
+    else {
+      compilationData.moduleManager.reset()
+
+      val r = results
+
+      for (token <- r.modules)
+        compilationData.moduleManager.importModule(
+          token.text.toLowerCase, new ErrorSource(token))
 
       r
     }
