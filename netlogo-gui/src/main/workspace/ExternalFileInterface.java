@@ -1,6 +1,6 @@
 // (C) Uri Wilensky. https://github.com/NetLogo/NetLogo
 
-package org.nlogo.window;
+package org.nlogo.workspace;
 
 import org.nlogo.core.AgentKind;
 import org.nlogo.core.AgentKindJ;

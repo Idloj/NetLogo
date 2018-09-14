@@ -5,7 +5,7 @@ package org.nlogo.window;
 import org.nlogo.core.{ CompilerException, Program }
 import org.nlogo.api.{ AgentException, Exceptions, JobOwner, LogoException, SourceOwner, ValueConstraint }
 import org.nlogo.nvm.CompilerResults
-import org.nlogo.workspace.AbstractWorkspace
+import org.nlogo.workspace.{ AbstractWorkspace, ExternalFileInterface }
 import org.nlogo.window.Event.LinkChild
 import org.nlogo.window.Events.{
   CompileMoreSourceEvent, CompiledEvent, InterfaceGlobalEvent,

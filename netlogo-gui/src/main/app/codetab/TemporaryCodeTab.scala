@@ -15,8 +15,8 @@ import org.nlogo.core.I18N
 import org.nlogo.ide.FocusedOnlyAction
 import org.nlogo.swing.{ FileDialog => SwingFileDialog, ToolBarActionButton, UserAction },
   UserAction.MenuAction
-import org.nlogo.window.{ Events => WindowEvents, ExternalFileInterface }
-import org.nlogo.workspace.{ AbstractWorkspace, ModelTracker }
+import org.nlogo.window.{ Events => WindowEvents }
+import org.nlogo.workspace.{ AbstractWorkspace, ExternalFileInterface, ModelTracker }
 
 import scala.io.Codec
 import scala.util.control.Exception.ignoring
