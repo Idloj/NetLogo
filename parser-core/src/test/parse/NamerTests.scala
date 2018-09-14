@@ -17,7 +17,8 @@ class NamerTests extends FunSuite {
         StructureResults(program))
     assertResult(1)(results.procedures.size)
     val procedure = results.procedures.values.iterator.next()
-    val namer = new Namer(results.program, results.procedures, procedure, new DummyExtensionManager)
+    val namer = new Namer(results.program, results.procedures, procedure,
+      new DummyExtensionManager, new DummyModuleManager)
     namer.validateProcedure()
     TransformableTokenStream(results.procedureTokens(procedure.name).iterator, namer)
       .takeWhile(_.tpe != TokenType.Eof)

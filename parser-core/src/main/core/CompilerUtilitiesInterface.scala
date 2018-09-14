@@ -19,7 +19,8 @@ trait CompilerUtilitiesInterface extends LiteralParser {
   def isReporter(s: String,
                  program: Program,
                  procedures: ProceduresMap,
-                 extensionManager: ExtensionManager): Boolean
+                 extensionManager: ExtensionManager,
+                 moduleManager: ModuleManager): Boolean
 
   def isReporter(s: String): Boolean
 

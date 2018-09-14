@@ -3,8 +3,8 @@
 package org.nlogo.parse
 
 import org.nlogo.core,
-  core.{ DummyExtensionManager, CompilerException, CompilerUtilitiesInterface,
-        File, FrontEndInterface, ExtensionManager, StructureResults, Program,
+  core.{ CompilerException, CompilerUtilitiesInterface, DummyExtensionManager, DummyModuleManager,
+        File, FrontEndInterface, ExtensionManager, ModuleManager, StructureResults, Program,
         LiteralImportHandler, TokenColorizer }
 
 object CompilerUtilities extends CompilerUtilitiesInterface {
@@ -48,10 +48,10 @@ object CompilerUtilities extends CompilerUtilitiesInterface {
   }
 
   def isReporter(s: String): Boolean =
-    isReporter(s, Program.empty(), FrontEndInterface.NoProcedures, new DummyExtensionManager)
+    isReporter(s, Program.empty(), FrontEndInterface.NoProcedures, new DummyExtensionManager, new DummyModuleManager)
 
   // used by CommandLine
-  def isReporter(s: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager) =
+  def isReporter(s: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, moduleManager: ModuleManager) =
     try {
       val namedTokens =
         tokenizer.tokenizeString("to __is-reporter? report " + s + "\nend")
@@ -61,7 +61,7 @@ object CompilerUtilities extends CompilerUtilitiesInterface {
       val results = sp.parse(namedTokens, StructureResults(program, procedures))
       val proc = results.procedures.values.head
       val namer =
-        new Namer(program, procedures ++ results.procedures, proc, extensionManager)
+        new Namer(program, procedures ++ results.procedures, proc, extensionManager, moduleManager)
       namer.validateProcedure()
       val tokens = TransformableTokenStream(results.procedureTokens(proc.name).iterator, namer)
       tokens.toStream

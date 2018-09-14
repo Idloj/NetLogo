@@ -33,7 +33,7 @@ trait Compiling { this: AbstractWorkspace =>
   }
 
   def isReporter(s: String): Boolean =
-    compiler.isReporter(s, _world.program, procedures, getExtensionManager, getCompilationEnvironment);
+    compiler.isReporter(s, _world.program, procedures, getExtensionManager, getModuleManager, getCompilationEnvironment)
 
   def isValidIdentifier(s: String): Boolean =
     compiler.isValidIdentifier(s)

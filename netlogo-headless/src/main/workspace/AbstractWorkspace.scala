@@ -171,7 +171,7 @@ object AbstractWorkspaceTraits {
         source, new ImportHandler(world, getExtensionManager))
 
     def isReporter(s: String) =
-      compiler.utilities.isReporter(s, world.program, procedures, getExtensionManager)
+      compiler.utilities.isReporter(s, world.program, procedures, getExtensionManager, getModuleManager)
   }
 
   trait Procedures { this: AbstractWorkspace =>

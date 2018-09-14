@@ -2,7 +2,7 @@
 
 package org.nlogo.nvm
 
-import org.nlogo.core.{ Dialect, DummyCompilationEnvironment }
+import org.nlogo.core.{ Dialect, DummyCompilationEnvironment, DummyModuleManager }
 import org.nlogo.api.{ CompilerServices }
 import org.nlogo.core.Program
 import scala.collection.immutable.ListMap
@@ -34,7 +34,7 @@ class DefaultCompilerServices(compiler: CompilerInterface with AuxiliaryCompiler
     compiler.isValidIdentifier(s)
   def isReporter(s: String) =
     compiler.isReporter(s, emptyProgram, new ListMap[String, Procedure],
-                        new org.nlogo.api.DummyExtensionManager, new DummyCompilationEnvironment())
+                        new org.nlogo.api.DummyExtensionManager, new DummyModuleManager, new DummyCompilationEnvironment())
   def tokenizeForColorization(source: String) =
     compiler.tokenizeForColorization(
       source, new org.nlogo.api.DummyExtensionManager)

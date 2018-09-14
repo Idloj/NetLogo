@@ -133,7 +133,9 @@ class Backifier(program: Program,
         new nvmprim._extern(
           extensionManager.replaceIdentifier(c.token.text.toUpperCase)
             .asInstanceOf[nlogoApi.Command])
-      case core.prim._call(proc) =>
+      case core.prim._call(proc: nvm.Procedure) =>
+        new nvmprim._call(proc)
+      case core.prim._call(proc: core.FrontEndProcedure) =>
         new nvmprim._call(procedures(proc.name))
       case core.prim._let(Some(let)) =>
         new nvmprim._let(let)
@@ -207,7 +209,9 @@ class Backifier(program: Program,
       case core.prim._turtleorlinkvariable(varName, _) =>
         new nvmprim._turtleorlinkvariable(varName)
 
-      case core.prim._callreport(proc) =>
+      case core.prim._callreport(proc: nvm.Procedure) =>
+        new nvmprim._callreport(proc)
+      case core.prim._callreport(proc: core.FrontEndProcedure) =>
         new nvmprim._callreport(procedures(proc.name))
 
       case core.prim._errormessage(Some(let)) =>

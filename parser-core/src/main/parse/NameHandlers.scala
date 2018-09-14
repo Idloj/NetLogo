@@ -4,8 +4,8 @@ package org.nlogo.parse
 
 import org.nlogo.core,
   core.{ AgentVariableSet, Command, ExtensionManager, FrontEndInterface, Instruction,
-    PrimitiveCommand, PrimitiveReporter, Program, Reporter,
-    Token, TokenMapperInterface, TokenType},
+    ModuleManager, PrimitiveCommand, PrimitiveReporter, Program, Reporter,
+    Token, TokenMapperInterface, TokenType },
     FrontEndInterface.ProceduresMap
 
 trait NameHandler extends (Token => Option[(TokenType, core.Instruction)])
@@ -66,6 +66,18 @@ class ExtensionPrimitiveHandler(extensionManager: ExtensionManager) extends Name
           (TokenType.Reporter, new core.prim._externreport(r.getSyntax))
       }
     }
+}
+
+class ModuleProcedureHandler(moduleManager: ModuleManager) extends NameHandler {
+  override def apply(token: Token) = {
+    val name = token.value.asInstanceOf[String]
+    moduleManager.getProcedure(name) map { proc =>
+      if (proc.isReporter)
+        (TokenType.Reporter, new core.prim._callreport(proc))
+      else
+        (TokenType.Command, new core.prim._call(proc))
+    }
+  }
 }
 
 class AgentVariableReporterHandler(program: Program) extends NameHandler {

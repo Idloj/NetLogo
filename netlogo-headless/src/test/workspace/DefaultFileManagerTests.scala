@@ -6,7 +6,7 @@ import
   java.io.{ BufferedReader, File => JFile, FileReader, IOException, PrintWriter }
 
 import
-org.nlogo.{core, agent, api, nvm},
+  org.nlogo.{core, agent, api, nvm},
     agent.OutputObject,
     api.{ ExtensionManager => APIExtensionManager, SourceOwner },
     core.{ CompilerException, CompilerUtilitiesInterface, CompilationEnvironment,
@@ -328,7 +328,8 @@ class DefaultFileManagerTests extends FunSuite with OneInstancePerTest {
     override def isReporter(s: String,
                             program: Program,
                             procedures: ProceduresMap,
-                            extensionManager: core.ExtensionManager): Boolean = ???
+                            extensionManager: core.ExtensionManager,
+                            moduleManager: core.ModuleManager): Boolean = ???
 
     override def isReporter(s: String): Boolean = ???
 

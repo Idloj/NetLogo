@@ -3,7 +3,7 @@
 package org.nlogo.parse
 
 import org.nlogo.core.{ CompilationOperand, Dialect, DummyExtensionManager, ExtensionManager,
-  FrontEndInterface, FrontEndProcedure, NetLogoCore, ProcedureDefinition,
+  FrontEndInterface, FrontEndProcedure, ModuleManager, NetLogoCore, ProcedureDefinition,
   ProcedureSyntax, StructureResults, TokenizerInterface },
   FrontEndInterface.ProceduresMap
 
@@ -13,7 +13,7 @@ trait NetLogoParser {
   def tokenizer: TokenizerInterface
 
   def basicParse(compilationOperand: CompilationOperand): (Seq[ProcedureDefinition], StructureResults) = {
-    import compilationOperand.{ extensionManager, oldProcedures }
+    import compilationOperand.{ extensionManager, moduleManager, oldProcedures }
 
     val structureResults = StructureParser.parseSources(tokenizer, compilationOperand)
 
@@ -24,7 +24,7 @@ trait NetLogoParser {
     val newTopLevelProcedures = (structureResults.procedures -- oldProcedures.keys)
 
     val topLevelDefs = newTopLevelProcedures.values
-      .map(parseProcedure(structureResults, globallyUsedNames, oldProcedures, extensionManager)).toSeq
+      .map(parseProcedure(structureResults, globallyUsedNames, oldProcedures, extensionManager, moduleManager)).toSeq
     (topLevelDefs, structureResults)
   }
 
@@ -32,7 +32,8 @@ trait NetLogoParser {
     structureResults:  StructureResults,
     globallyUsedNames: SymbolTable,
     oldProcedures:     ProceduresMap,
-    extensionManager:  ExtensionManager)(procedure: FrontEndProcedure): ProcedureDefinition = {
+    extensionManager:  ExtensionManager,
+    moduleManager:     ModuleManager)(procedure: FrontEndProcedure): ProcedureDefinition = {
     val rawTokens = structureResults.procedureTokens(procedure.name)
     val usedNames = globallyUsedNames.addSymbols(procedure.args, SymbolType.ProcedureVariable)
     val namedTokens = {
@@ -40,7 +41,7 @@ trait NetLogoParser {
       val namer =
         new Namer(structureResults.program,
           oldProcedures ++ structureResults.procedures,
-          procedure, extensionManager)
+          procedure, extensionManager, moduleManager)
       namer.validateProcedure()
       TransformableTokenStream(letNamedTokens, namer)
     }

@@ -37,7 +37,12 @@ class ModuleManager(workspace: AbstractWorkspace) extends CoreModuleManager {
     }
   }
 
-  override def getProcedure(name: String): Option[FrontEndProcedure] = None
+  override def getProcedure(name: String): Option[FrontEndProcedure] = {
+    name.split("::") match {
+      case Array(module, proc) => modules.get(module).flatMap(_.proceduresMap.get(proc))
+      case _ => None
+    }
+  }
 
   class Module(path: String, var innerSource: String) extends SourceOwner {
     override def classDisplayName: String = path

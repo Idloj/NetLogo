@@ -168,9 +168,9 @@ class Compiler(dialect: Dialect) extends PresentationCompilerInterface {
     parserTokenizer.isValidIdentifier(s)
 
   // used by CommandLine
-  def isReporter(s: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, compilationEnv: CompilationEnvironment) = {
+  def isReporter(s: String, program: Program, procedures: ProceduresMap, extensionManager: ExtensionManager, moduleManager: ModuleManager, compilationEnv: CompilationEnvironment) = {
     val proceduresListMap = ListMap[String, Procedure](procedures.toSeq: _*)
-    utilities.isReporter(s, program, proceduresListMap, extensionManager)
+    utilities.isReporter(s, program, proceduresListMap, extensionManager, moduleManager)
   }
 
   // used by the indenter. we always use the 2D tokenizer since it doesn't matter in this context

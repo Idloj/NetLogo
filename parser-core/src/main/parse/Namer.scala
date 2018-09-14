@@ -4,7 +4,7 @@ package org.nlogo.parse
 
 import org.nlogo.core,
   core.{ Dialect, ExtensionManager, FrontEndInterface, FrontEndProcedure, Instruction,
-  Program, Token, TokenType },
+    ModuleManager, Program, Token, TokenType },
   core.Fail._
 
 /**
@@ -22,7 +22,8 @@ class Namer(
   program: Program,
   procedures: FrontEndInterface.ProceduresMap,
   procedure: FrontEndProcedure,
-  extensionManager: ExtensionManager) extends TokenTransformer[Unit] {
+  extensionManager: ExtensionManager,
+  moduleManager: ModuleManager) extends TokenTransformer[Unit] {
 
   // the handlers are mutually exclusive (only one applies), so the order the handlers
   // appear is arbitrary, except that for checkName to work, ProcedureVariableHandler
@@ -33,6 +34,7 @@ class Namer(
     new BreedHandler(program),
     new AgentVariableReporterHandler(program),
     new ExtensionPrimitiveHandler(extensionManager),
+    new ModuleProcedureHandler(moduleManager),
     new ProcedureVariableHandler(procedure.args),
     new CallHandler(procedures))
 

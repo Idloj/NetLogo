@@ -25,7 +25,7 @@ class CompilerUtilitiesTests extends FunSuite {
 
   def isReporter(s: String) =
     compilerUtilities.isReporter(s, program,
-      proceduresMap, new DummyExtensionManager)
+      proceduresMap, new DummyExtensionManager, new DummyModuleManager)
 
   /// tests for isReporter
 
